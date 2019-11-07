@@ -35,7 +35,7 @@ genFrames frame frameCount
   | otherwise = do
       writePng (printf "out/frame%03d.png" frame) $ getFrame frame
       putStrLn $ printf "Rendering frame %d/%d" frame frameCount
-      genFrames (frame + 1) frame
+      genFrames (frame + 1) frameCount
 
 main :: IO ()
 main = genFrames 0 (60*30)
