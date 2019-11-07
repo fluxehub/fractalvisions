@@ -41,6 +41,9 @@ packages:
 #
 # extra-deps: []
 
+exposed-modules:
+- Fractal
+
 # Override default flag values for local packages and extra-deps
 # flags: {}
 
