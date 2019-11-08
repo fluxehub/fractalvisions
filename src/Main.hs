@@ -2,41 +2,38 @@ module Main where
 
 import Codec.Picture
 import Text.Printf
+import System.Random
+import System.Process
 
 import Fractal
 
---genImage :: Julia -> Image PixelRGB8
---genImage f = generateImage (genFractal f) w h
---  where
---    h = height f
---    w = width f
+quarterNotes = map (\x -> round (x * ((3600.0/130.0)))) [0..20000]
+sixteenthNotes = map (\x -> round (x * ((3600.0/130.0)/16.0))) [0..20000]
 
-black :: Image PixelRGB8
-black = generateImage (\x y -> PixelRGB8 0 0 0) 640 480
+genFrame :: Julia -> Int -> Image PixelRGB8
+genFrame f frame = generateImage (genFractal f) w h
+  where
+    h = height f
+    w = width f
 
-red :: Image PixelRGB8
-red = generateImage (\x y -> PixelRGB8 255 0 0) 640 480
-
-white :: Image PixelRGB8
-white = generateImage (\x y -> PixelRGB8 255 255 255) 640 480
-
-quarterNotes = map (\x -> round (x * ((3600.0/60.0)))) [0..20000]
-sixteenthNotes = map (\x -> round (x * ((3600.0/60.0)/4))) [0..20000]
-
-getFrame :: Int -> Image PixelRGB8
-getFrame frame
-  | frame `elem` quarterNotes = red
--- | frame `elem` sixteenthNotes = white
-  | otherwise = black
-
-genFrames :: Int -> Int -> IO ()
-genFrames frame frameCount
+genFrames :: Int -> Int -> Int -> Double -> IO ()
+genFrames frame frameCount depth zoom
   | frame == frameCount = return ()
   | otherwise = do
-      writePng (printf "out/frame%03d.png" frame) $ getFrame frame
-      putStrLn $ printf "Rendering frame %d/%d" frame frameCount
-      genFrames (frame + 1) frameCount
-
+      --randA <- randomRIO (-1, 1):: IO Double
+      --randB <- randomRIO (-1, 1):: IO Double
+      let f = Julia 360 480 newZoom (cos (-nFrame * 0.01 + 0.5)) (sin (nFrame * 0.01 - 0.5)) depth
+      writePng (printf "out/frame%04d.png" frame) $ genFrame f frame
+      putStrLn $ printf "Rendering frame %d/%d" (frame + 1) frameCount
+      genFrames (frame + 1) frameCount newDepth newZoom
+  where
+    nFrame = fromIntegral frame
+    newDepth = if frame `elem` quarterNotes then depth + 1 else depth
+    newZoom = if frame `elem` quarterNotes then (zoom + 0.03) else (zoom + 0.001)
+    
 main :: IO ()
-main = genFrames 0 (60*30)
-  where fractal = Julia 360 480 1 (-1) 0.124123 100
+main = do
+  createProcess (shell "rm out/*")
+  genFrames 0 500 5 0.3
+  putStrLn "done"
+  

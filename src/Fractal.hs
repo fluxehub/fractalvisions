@@ -46,6 +46,6 @@ genFractal fract x y = PixelRGB8 r g b
 
     i = fractalLoop zx zy cx cy $ depth fract
 
-    r = fromIntegral $ shiftL i 21
-    g = fromIntegral $ shiftL i 10
-    b = fromIntegral $ i * 8
+    r = fromIntegral $ (i * 20)
+    g = fromIntegral $ (i)
+    b = fromIntegral $ (i * 8)
