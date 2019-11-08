@@ -30,9 +30,8 @@ fractalLoop zx zy cX cY d
     where tmp = zx**2 - zy**2 + cX
           czy = 2*zx*zy + cY
 
-
 genFractal :: Julia -> Int -> Int -> PixelRGB8
-genFractal fract x y = PixelRGB8 r g b
+genFractal fract x y = PixelRGB8 l l l
   where 
     h  = fromIntegral $ height fract
     w  = fromIntegral $ width fract
@@ -46,6 +45,7 @@ genFractal fract x y = PixelRGB8 r g b
 
     i = fractalLoop zx zy cx cy $ depth fract
 
-    r = fromIntegral $ (i * 20)
-    g = fromIntegral $ (i)
-    b = fromIntegral $ (i * 8)
+    r = fromIntegral $ i * 20 :: Double
+    g = fromIntegral $ i :: Double
+    b = fromIntegral $ i * 8 :: Double
+    l = fromIntegral $ round $ r * 0.399 + g * 0.487 + b * 0.114
