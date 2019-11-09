@@ -23,7 +23,7 @@ data Julia =
            } 
            deriving (Eq,Show,Ord)
 
-fractalLoop :: Double -> Double -> Double -> Double -> Int -> Int
+fractalLoop :: Double -> Double -> Double -> Double -> Double -> Double
 fractalLoop zx zy cX cY d
   | zx**2 + zy**2 >= 4 || d <= 1 = d
   | otherwise = fractalLoop tmp czy cX cY (d - 1)
@@ -48,4 +48,10 @@ genFractal fract x y = PixelRGB8 l l l
     r = fromIntegral $ i * 20 :: Double
     g = fromIntegral $ i :: Double
     b = fromIntegral $ i * 8 :: Double
-    l = fromIntegral $ round $ r * 0.399 + g * 0.487 + b * 0.114
+    l = fromIntegral $ smooth 0 (r * 0.399 + g * 0.487 + b * 0.114)
+smooth :: Int -> Double -> Int
+smooth i l | i < max_iter && abs (l) < 30 = round (exp(abs(l))) + smooth (i+1) l
+           | otherwise = 0
+    where
+      max_iter = 3000
+    
